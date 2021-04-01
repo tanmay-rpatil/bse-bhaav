@@ -9,7 +9,7 @@ d += date.strftime("%m")
 d += date.strftime("%y")
 # d = '300321'
 print(d)
-fname = d+"_CSV.ZIP"
+fname = d+"_CSV.zip"
 link = "http://www.bseindia.com/download/BhavCopy/Equity/EQ"+fname
 print(link)
 
@@ -46,7 +46,7 @@ print(sc_codes_lst)
 
 valid_tuples = {}
 titles = ['SC_CODE', 'SC_NAME', 'HIGH', 'LOW', 'OPEN', 'CLOSE','LAST']
-fname = "EQ"+d+".CSV"
+fname = "EQ"+d+".csv"
 with open('output.csv', 'w', newline='' ) as op_file:
 	writer = csv.writer(op_file)
 	writer.writerow(titles)
