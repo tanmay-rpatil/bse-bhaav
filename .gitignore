@@ -1,0 +1,12 @@
+#template for web-scraping projects
+
+# folders to ignore
+env/
+.vscode/
+
+# files to ignore 
+*.csv
+*.html
+*.xls
+*.xlsx
+*.xls*
