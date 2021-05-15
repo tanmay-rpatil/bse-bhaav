@@ -2,8 +2,11 @@ import requests, csv
 import datetime
 from zipfile import ZipFile
 
-# global vars
+#get codes from config.dat
+#download sheet and get the values for selected codes
 
+# global vars
+link = "http://www.bseindia.com/download/BhavCopy/Equity/EQ"
 #headers for mimicking a browser
 h = {'user-agent': "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0"}
 # generate today's date
@@ -16,11 +19,11 @@ print(d)
 
 # urls, downloaded zip files 
 fname = d+"_CSV.zip"
-link = "http://www.bseindia.com/download/BhavCopy/Equity/EQ"+fname
-print(link)
-
+link += fname
+# print(link)
 
 # main
+
 r = requests.get(link, headers=h)
 if	r.status_code != 200:
 	print(str(r.status_code)+" error, exiting program")
@@ -46,7 +49,7 @@ with open("config.dat") as f:
 	for line in f.readlines():
 		if len(line)!=0:
 			sc_codes_lst.append(line.strip())
-
+print("The selected codes are: ")
 print(sc_codes_lst)
 
 valid_tuples = {}
