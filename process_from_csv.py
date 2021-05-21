@@ -73,7 +73,7 @@ def proc(ip_fname,req_fname,op_fname):
 	
 	# print(sc_codes_dict_lst)
 	# valid_tuples = {}
-	titles = ['SC_CODE', 'ACTION', 'SC_NAME', 'CLOSE','TAR_BUY','TAR_SELL']
+	titles = ['SC_CODE', 'ACTION', 'SC_NAME', 'CLOSE','TAR_BUY','TAR_SELL', 'HIGH', 'LOW', 'OPEN','LAST']
 	with open('output.csv', 'w', newline='' ) as op_file:
 		writer = csv.writer(op_file)
 		writer.writerow(titles)
@@ -100,11 +100,11 @@ def proc(ip_fname,req_fname,op_fname):
 						if sell:
 							if (sell < float(row['CLOSE']) ):
 								action='sell'
-								print(row['SC_NAME']+' Sell @' +row['CLOSE'])
+								print(row['SC_NAME']+' Sell @ ₹' +row['CLOSE'])
 						if buy:
 							if ( buy > float(row['CLOSE']) ):
 								action='buy'
-								print(row['SC_NAME']+' Buy @' +row['CLOSE'])
+								print(row['SC_NAME']+' Buy  @ ₹' +row['CLOSE'])
 
 						for title in titles:
 							#dedcide if buy or sell or none
