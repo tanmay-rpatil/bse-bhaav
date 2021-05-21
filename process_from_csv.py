@@ -54,48 +54,74 @@ def proc(ip_fname,req_fname,op_fname):
 	# get the reuired codes of stocks
 	sc_codes_dict_lst = [] # format {code: ,buy: ,sell: }
 	req_csv_reader = csv.DictReader(open(req_fname), delimiter=',')
+	#saving the target data for required stocks
 	for row in req_csv_reader:
-		code = row["Code"]
+		code = row["Code"].strip()
 		buy = (row["Target Buy"].strip())
 		sell = (row["Target Sell"].strip())
-		st_name = row["Script"]
+		# st_name = row["Script"].strip()
 		#check if empty str
 		if not buy:
-			buy = 0
+			buy = ''
 		else:
 			buy = float(buy)
 		if not sell:
-			sell = 0
+			sell = ''
 		else:
 			sell = float(sell)
-
-		sc_codes_dict_lst.append( { "name":st_name, "code":code, "buy":buy, "sell":sell } )
+		sc_codes_dict_lst.append( { "code":code, "buy":buy, "sell":sell } )
 	
-	print(sc_codes_dict_lst)
-	valid_tuples = {}
-	titles = ['SC_CODE', 'ACTION', 'SC_NAME', 'HIGH', 'LOW', 'OPEN', 'CLOSE','LAST']
+	# print(sc_codes_dict_lst)
+	# valid_tuples = {}
+	titles = ['SC_CODE', 'ACTION', 'SC_NAME', 'CLOSE','TAR_BUY','TAR_SELL']
 	with open('output.csv', 'w', newline='' ) as op_file:
 		writer = csv.writer(op_file)
 		writer.writerow(titles)
 		for stock in sc_codes_dict_lst:
 			code = stock["code"]
-	# 		with open(op_fname, newline='') as csvfile:
-	# 			csv_reader = csv.DictReader(open(ip_fname), delimiter=',')
-	# 			found = False
-	# 			print(ip_fname)
+			sell = stock["sell"]
+			buy = stock["buy"]
+			if ( ( not buy ) and (not sell) ): #ignore these stocks
+				# print(buy=='')
+				continue
+
+			with open(op_fname, newline='') as csvfile:
+				csv_reader = csv.DictReader(open(ip_fname), delimiter=',')
+				found = False
+				# print(ip_fname)
 	# 			# print(csv_reader)
-	# 			for row in csv_reader:
-	# 				print(row)
-	# 				if row.get('SC_CODE')==code:
-	# 					found = True
-	# 					data_lst = []
-	# 					for title in titles:
-	# 						data_lst.append(row.get(title).strip())
-	# 					print(data_lst)
-	# 					writer.writerow(data_lst)
-	# 					break;
-	# 			if not found:
-	# 				print("not found-> " + code)
+				for row in csv_reader:
+					# print(row['SC_NAME'])
+					if row.get('SC_CODE')==code:
+						found = True
+						# print(row['SC_NAME'])
+						data_lst = []
+						action=''
+						if sell:
+							if (sell < float(row['CLOSE']) ):
+								action='sell'
+								print(row['SC_NAME']+' Sell @' +row['CLOSE'])
+						if buy:
+							if ( buy > float(row['CLOSE']) ):
+								action='buy'
+								print(row['SC_NAME']+' Buy @' +row['CLOSE'])
+
+						for title in titles:
+							#dedcide if buy or sell or none
+							if title == 'ACTION':
+								data_lst.append(action)
+							elif not row.get(title):
+								continue
+							else:
+								data_lst.append(row.get(title).strip())
+						# append targets
+						data_lst.append(stock["buy"])
+						data_lst.append(stock["sell"])
+						# print(data_lst)
+						writer.writerow(data_lst)
+						break;
+				if not found:
+					print("not found-> " + code)
 
 
 def main():
