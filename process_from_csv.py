@@ -22,7 +22,7 @@ def get_date():
 	d += date.strftime("%m")
 	d += date.strftime("%y")
 	# d = '300321' => for debugging purposes
-	print(d) 
+	# print(d) 
 	return(d)
 
 # get the req data for link, return a tuple of req,date
@@ -30,6 +30,7 @@ def make_req(date):
 	if( len(date.strip())==0 ):
 		# default behaviour - today's date
 		date = get_date()
+	print ("checking for date: "+date)
 	link= base_link + (date+"_CSV.ZIP")
 	print("requesting link: "+link)
 	r = requests.get(link, headers=h)
@@ -73,7 +74,7 @@ def proc(ip_fname,req_fname,op_fname):
 	
 	# print(sc_codes_dict_lst)
 	# valid_tuples = {}
-	titles = ['SC_CODE', 'ACTION', 'SC_NAME', 'CLOSE','TAR_BUY','TAR_SELL', 'HIGH', 'LOW', 'OPEN','LAST']
+	titles = ['SC_CODE', 'ACTION', 'SC_NAME', 'CLOSE', 'HIGH', 'LOW', 'OPEN','LAST','TAR_BUY','TAR_SELL']
 	with open('output.csv', 'w', newline='' ) as op_file:
 		writer = csv.writer(op_file)
 		writer.writerow(titles)
@@ -81,9 +82,9 @@ def proc(ip_fname,req_fname,op_fname):
 			code = stock["code"]
 			sell = stock["sell"]
 			buy = stock["buy"]
-			if ( ( not buy ) and (not sell) ): #ignore these stocks
-				# print(buy=='')
-				continue
+			# if ( ( not buy ) and (not sell) ): #ignore these stocks
+			# 	# print(buy=='')
+			# 	continue
 
 			with open(op_fname, newline='') as csvfile:
 				csv_reader = csv.DictReader(open(ip_fname), delimiter=',')
@@ -125,7 +126,7 @@ def proc(ip_fname,req_fname,op_fname):
 
 
 def main():
-	print ("Input required date in the format ddmmyy (ex 300321 for 30th may 2001) \n OR ")
+	print ("Input required date in the format ddmmyy (ex 300321 for 30th may 2021) \n OR ")
 	print ("Just input enter to try on today's date")
 	d = input("Input:")
 	(req,date) = make_req(d)
