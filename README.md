@@ -12,3 +12,4 @@ Scrape the daily BSE data CSV for required stock data
 ## Notes 
 	- TODO 
 		- Update readme to a cleaner format
+		- Move code to command line arguments

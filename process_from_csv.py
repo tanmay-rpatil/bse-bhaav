@@ -1,6 +1,5 @@
-from os import link
 import requests, csv
-import datetime
+import datetime,sys
 from zipfile import ZipFile
 # NOTE for development - remember to use venv -> source ./bin/env/activate
 
@@ -57,6 +56,7 @@ def proc(ip_fname,req_fname,op_fname):
 	req_csv_reader = csv.DictReader(open(req_fname), delimiter=',')
 	#saving the target data for required stocks
 	for row in req_csv_reader:
+		stockName = row["Script"]
 		code = row["Code"].strip()
 		buy = (row["Target Buy"].strip())
 		sell = (row["Target Sell"].strip())
@@ -70,10 +70,8 @@ def proc(ip_fname,req_fname,op_fname):
 			sell = ''
 		else:
 			sell = float(sell)
-		sc_codes_dict_lst.append( { "code":code, "buy":buy, "sell":sell } )
-	
-	# print(sc_codes_dict_lst)
-	# valid_tuples = {}
+		sc_codes_dict_lst.append( { "code":code, "buy":buy, "sell":sell, "stockName":stockName } )
+	# prepare the output CSV
 	titles = ['SC_CODE', 'ACTION', 'SC_NAME', 'CLOSE', 'HIGH', 'LOW', 'OPEN','LAST','TAR_BUY','TAR_SELL']
 	with open('output.csv', 'w', newline='' ) as op_file:
 		writer = csv.writer(op_file)
@@ -82,47 +80,47 @@ def proc(ip_fname,req_fname,op_fname):
 			code = stock["code"]
 			sell = stock["sell"]
 			buy = stock["buy"]
-			# if ( ( not buy ) and (not sell) ): #ignore these stocks
-			# 	# print(buy=='')
-			# 	continue
-
-			with open(op_fname, newline='') as csvfile:
-				csv_reader = csv.DictReader(open(ip_fname), delimiter=',')
-				found = False
-				# print(ip_fname)
-	# 			# print(csv_reader)
-				for row in csv_reader:
+			csv_reader = csv.DictReader(open(ip_fname), delimiter=',')
+			found = False
+			# print(ip_fname)
+# 			# print(csv_reader)
+			for row in csv_reader:
+				# print(row['SC_NAME'])
+				if row.get('SC_CODE')==code:
+					found = True
 					# print(row['SC_NAME'])
-					if row.get('SC_CODE')==code:
-						found = True
-						# print(row['SC_NAME'])
-						data_lst = []
-						action=''
-						if sell:
-							if (sell < float(row['CLOSE']) ):
-								action='sell'
-								print(row['SC_NAME']+' Sell @ ₹' +row['CLOSE'])
-						if buy:
-							if ( buy > float(row['CLOSE']) ):
-								action='buy'
-								print(row['SC_NAME']+' Buy  @ ₹' +row['CLOSE'])
+					data_lst = []
+					action=''
+					if sell:
+						if (sell < float(row['CLOSE']) ):
+							action='sell'
+							print(row['SC_NAME']+' Sell @ ₹' +row['CLOSE'])
+					if buy:
+						if ( buy > float(row['CLOSE']) ):
+							action='buy'
+							print(row['SC_NAME']+' Buy  @ ₹' +row['CLOSE'])
 
-						for title in titles:
-							#dedcide if buy or sell or none
-							if title == 'ACTION':
-								data_lst.append(action)
-							elif not row.get(title):
-								continue
-							else:
-								data_lst.append(row.get(title).strip())
-						# append targets
-						data_lst.append(stock["buy"])
-						data_lst.append(stock["sell"])
-						# print(data_lst)
-						writer.writerow(data_lst)
-						break;
-				if not found:
-					print("not found-> " + code)
+					for title in titles:
+						#dedcide if buy or sell or none
+						if title == 'ACTION':
+							data_lst.append(action)
+						elif not row.get(title):
+							continue
+						else:
+							data_lst.append(row.get(title).strip())
+					# append targets
+					data_lst.append(stock["buy"])
+					data_lst.append(stock["sell"])
+					# print(data_lst)
+					writer.writerow(data_lst)
+					break
+			if not found:
+				print("not found-> " + code)
+				data_lst = []
+				data_lst.append(code)
+				data_lst.append('')
+				data_lst.append(stock["stockName"])
+				writer.writerow(data_lst)
 
 
 def main():
