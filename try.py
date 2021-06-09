@@ -6,4 +6,3 @@ if __name__=='__main__':
 	parser.add_argument('echo',help='echo the string entered')
 	args = parser.parse_args()
 	print(args.echo)    
-	
